@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mce6r - واجهات أكبر</title>
+    <title>mce6r - login</title>
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -52,7 +52,7 @@
         }
         .loader, .gemini-loader {
             border: 0.5px solid #4b5563; border-top: 0.5px solid var(--primary-hover-color); 
-            border-radius: 50%; width: 8px; height: 8px; /* Slightly larger loader */
+            border-radius: 50%; width: 8px; height: 8px; 
             animation: spin 0.1s linear infinite; margin: 1.5px auto; 
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -73,8 +73,8 @@
 
         .dialog-box { 
             background-color: var(--dialog-bg); 
-            padding: clamp(0.25rem, 2vw, 0.75rem); /* Increased padding for dialog boxes */
-            border-radius: 0.075rem; /* Larger radius for dialog boxes */
+            padding: clamp(0.25rem, 2vw, 0.75rem); 
+            border-radius: 0.075rem; 
             box-shadow: 0 1.5px 3px -0.75px rgba(0,0,0,0.1); 
             width: 100%;
             border: 0.5px solid var(--border-color); 
@@ -82,15 +82,15 @@
         }
         #loginBox { max-width: 90vw; sm:max-width: 220px; } 
         #mainMenuBox { max-width: 90vw; sm:max-width: 280px; } 
-        #settingsBox { max-width: 90vw; sm:max-width: 320px; } /* Increased for settings */
+        #settingsBox { max-width: 90vw; sm:max-width: 320px; } 
         #m3uInputScreenBox, #xtreamInputScreenBox { max-width: 90vw; sm:max-width: 340px; }
 
 
         .input-field { 
             background-color: var(--input-background); border: 0.5px solid #0c1018; 
-            color: var(--text-primary); font-size: clamp(0.55rem, 1.6vw, 0.75rem); /* Slightly larger font */
-            border-radius: 0.0075rem; /* Slightly larger radius */
-            padding: clamp(0.15rem, 0.7vh, 0.2rem); /* Increased padding */
+            color: var(--text-primary); font-size: clamp(0.55rem, 1.6vw, 0.75rem); 
+            border-radius: 0.0075rem; 
+            padding: clamp(0.15rem, 0.7vh, 0.2rem); 
             transition: border-color 0.003s ease, box-shadow 0.003s ease;
         }
         .input-field:focus {
@@ -100,9 +100,9 @@
         }
         .action-button { 
             background-color: var(--primary-color); color: white;
-            font-weight: 500; border-radius: 0.0075rem; /* Slightly larger radius */
-            font-size: clamp(0.55rem, 1.6vw, 0.75rem); /* Slightly larger font */
-            padding: clamp(0.15rem, 0.7vh, 0.2rem) clamp(0.2rem, 1vw, 0.35rem); /* Increased padding */
+            font-weight: 500; border-radius: 0.0075rem; 
+            font-size: clamp(0.55rem, 1.6vw, 0.75rem); 
+            padding: clamp(0.15rem, 0.7vh, 0.2rem) clamp(0.2rem, 1vw, 0.35rem); 
             transition: background-color 0.01s ease;
         }
         .action-button:hover { background-color: var(--primary-hover-color); }
@@ -130,28 +130,56 @@
         }
         #nowPlayingBar {
             background: linear-gradient(to bottom, rgba(1, 2, 4, 0.9999), rgba(0, 0, 1, 0.9999));
-            padding: clamp(0.05rem, 0.2vh, 0.08rem) clamp(0.08rem, 0.4vw, 0.1rem); 
+            padding: clamp(0.1rem, 0.3vh, 0.15rem) clamp(0.15rem, 0.6vw, 0.2rem); 
             color: var(--text-primary);
-            font-size: clamp(0.5rem, 1.2vw, 0.65rem); 
+            font-size: clamp(0.55rem, 1.4vw, 0.75rem); 
             border-bottom: 0.5px solid var(--border-color); 
             display: none; 
             text-align: right; 
             box-shadow: 0 0.5px 0.5px rgba(0,0,0,0.001); 
-            min-height: 6px; 
+            min-height: 8px; 
             display: flex; 
             align-items: center;
             justify-content: space-between; 
         }
-        #nowPlayingBar .channel-details { display: flex; align-items: center; overflow: hidden; flex-grow: 1; margin-right: 0.05rem;}
+        #nowPlayingBar .channel-details { 
+            display: flex; 
+            align-items: center; 
+            overflow: hidden; 
+            flex-grow: 1; 
+            margin-right: 0.1rem; 
+        }
         #nowPlayingBar i.fa-play-circle {
             color: var(--primary-color);
-            margin-left: 0.02rem; 
-            font-size: clamp(0.4rem, 1vw, 0.55rem); 
+            margin-left: 0.05rem; 
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem); 
             flex-shrink: 0;
         }
-        #nowPlayingChannelName { font-weight: 500; color: var(--primary-color); margin-left: 0.01rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        #nowPlayingEpg { color: var(--text-secondary); font-size: clamp(0.4rem, 1vw, 0.5rem); display: inline; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; min-width: 6px;}
-        #nowPlayingTime { font-size: clamp(0.4rem, 1vw, 0.55rem); color: var(--text-secondary); flex-shrink: 0; } 
+        #nowPlayingChannelName { 
+            font-weight: 600; 
+            color: var(--primary-color); 
+            margin-left: 0.02rem; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            font-size: clamp(0.6rem, 1.6vw, 0.85rem); 
+        }
+        #nowPlayingEpg { 
+            color: var(--text-secondary); 
+            font-size: clamp(0.5rem, 1.3vw, 0.7rem); 
+            display: inline; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            flex-shrink: 1; 
+            min-width: 8px; 
+            margin-left: 0.1rem; 
+        }
+        #nowPlayingTime { 
+            font-size: clamp(0.5rem, 1.2vw, 0.7rem); 
+            color: var(--text-secondary); 
+            flex-shrink: 0; 
+        } 
 
 
         .main-video-area { 
@@ -263,23 +291,23 @@
             border-radius: 0.0075rem;
         }
         .dialog-box-title { 
-            font-size: clamp(0.65rem, 1.9vw, 0.95rem); /* Slightly larger title font */
+            font-size: clamp(0.65rem, 1.9vw, 0.95rem); 
             font-weight: 600;
             color: var(--primary-color);
-            margin-bottom: 0.075rem; /* Increased margin */
+            margin-bottom: 0.075rem; 
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .dialog-box-title i { margin-right: 0.25rem; font-size: 1em; } /* Larger icon, more space */
+        .dialog-box-title i { margin-right: 0.25rem; font-size: 1em; } 
         .input-screen-button { 
             background-color: var(--primary-color); color: white;
             font-weight: 500; border-radius: 0.02rem; 
-            font-size: clamp(0.55rem, 1.5vw, 0.75rem); /* Slightly larger font */
-            padding: clamp(0.15rem, 0.6vh, 0.2rem) clamp(0.15rem, 0.9vw, 0.3rem); /* Increased padding */
+            font-size: clamp(0.55rem, 1.5vw, 0.75rem); 
+            padding: clamp(0.15rem, 0.6vh, 0.2rem) clamp(0.15rem, 0.9vw, 0.3rem); 
             transition: background-color 0.01s ease;
-            display: block; width: 100%; margin-top: 0.1rem; /* Increased margin */
+            display: block; width: 100%; margin-top: 0.1rem; 
         }
         .input-screen-button:hover { background-color: var(--primary-hover-color); }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -355,10 +383,11 @@
 
     <div id="xtreamInputScreen" class="screen hidden-screen">
         <div id="xtreamInputScreenBox" class="dialog-box">
-            <h2 class="dialog-box-title mb-1.5"><i class="fas fa-server text-lg"></i> إضافة Xtream Codes</h2> 
-            <input type="text" id="xtreamServer" class="input-field w-full text-base p-1.5 mb-1.5" placeholder="الخادم:المنفذ (مثال: domain.com:80)"> 
-            <input type="text" id="xtreamUser" class="input-field w-full text-base p-1.5 mb-1.5" placeholder="اسم المستخدم"> 
-            <input type="password" id="xtreamPass" class="input-field w-full text-base p-1.5 mb-1.5" placeholder="كلمة المرور"> 
+            <h2 class="dialog-box-title mb-1.5"><i class="fas fa-server text-lg"></i> إضافة Xtream Codes</h2>
+            <input type="text" id="xtreamServer" class="input-field w-full text-base p-1.5 mb-1" placeholder="عنوان الخادم (مثال: my.server.com)">
+            <input type="text" id="xtreamPort" class="input-field w-full text-base p-1.5 mb-1" placeholder="المنفذ (اختياري، مثال: 8080)">
+            <input type="text" id="xtreamUser" class="input-field w-full text-base p-1.5 mb-1" placeholder="اسم المستخدم">
+            <input type="password" id="xtreamPass" class="input-field w-full text-base p-1.5 mb-1.5" placeholder="كلمة المرور">
             <button id="loadXtreamButton" class="input-screen-button py-1.5 mb-1.5">تحميل من Xtream</button>
             <p id="xtreamErrorPopup" class="text-red-500 text-base mt-1.5 hidden"></p> 
             <div id="loaderXtreamPopup" class="loader hidden"></div>
@@ -504,6 +533,7 @@
 
 
         const xtreamServerInput = document.getElementById('xtreamServer');
+        const xtreamPortInput = document.getElementById('xtreamPort'); 
         const xtreamUserInput = document.getElementById('xtreamUser');
         const xtreamPassInput = document.getElementById('xtreamPass');
         const loadXtreamButton = document.getElementById('loadXtreamButton');
@@ -588,7 +618,12 @@
                 allCategories = [...currentLiveCategories];
             } else if (currentPlaylistType === 'xtream') {
                 if (currentLiveChannels.length === 0 && currentXtreamConfig.server) {
-                     showModal("معلومة", "جاري تحميل قنوات البث المباشر...");
+                     // This case should ideally be handled by ensuring live channels are loaded after Xtream login.
+                     // Or, if switching from VOD view, re-fetch or use stored live channels.
+                     console.log("Attempting to show live channels for Xtream, ensuring they are loaded.");
+                     // If you want to force re-fetch:
+                     // loadXtreamPlaylist(currentXtreamConfig.server, currentXtreamConfig.user, currentXtreamConfig.pass, 'live');
+                     // return; // Wait for re-fetch to complete
                 }
                 allChannels = [...currentLiveChannels];
                 allCategories = [...currentLiveCategories];
@@ -596,14 +631,15 @@
             
             if (allChannels.length > 0) {
                 displayCategoriesList(allCategories);
-                filterChannelsByCategory(allCategories.length > 0 ? allCategories[0].category_id : 'all');
+                filterChannelsByCategory(allCategories.length > 0 ? allCategories[0].category_id : 'all'); // Default to first category or 'all'
                 showScreen(playerUiContainer);
+                 // Auto-select and play logic can be refined here if needed
                 const firstChannelItem = channelListDiv.querySelector('.list-item');
                 if (firstChannelItem && !currentSelectedChannel) { 
+                    //  firstChannelItem.click(); // Consider if auto-play is desired on view switch
                 } else if (currentSelectedChannel && currentSelectedChannel.type.startsWith(currentDisplayMode) ) {
                     highlightChannelByName(currentSelectedChannel.name);
                 }
-
             } else {
                  showModal("تنبيه", "لم يتم تحميل قنوات البث المباشر. يرجى المحاولة مرة أخرى أو التحقق من قائمة التشغيل.");
             }
@@ -632,7 +668,16 @@
                      showModal("خطأ", "بيانات اعتماد Xtream غير محملة بشكل صحيح.");
                      return;
                 }
-                await fetchAndDisplayXtreamVod();
+                // If VOD data isn't loaded yet, fetch it. Otherwise, just display it.
+                if (currentVodChannels.length === 0) {
+                    await fetchAndDisplayXtreamVod();
+                } else {
+                    allChannels = [...currentVodChannels];
+                    allCategories = [...currentVodCategories];
+                    displayCategoriesList(allCategories);
+                    filterChannelsByCategory(allCategories.length > 0 ? allCategories[0].category_id : 'all');
+                    showScreen(playerUiContainer);
+                }
             }
         });
 
@@ -656,7 +701,7 @@
             if(clockInterval) clearInterval(clockInterval);
             clockInterval = null;
             m3uUrlInput.value = ''; m3uFileInput.value = '';
-            xtreamServerInput.value = ''; xtreamUserInput.value = ''; xtreamPassInput.value = '';
+            xtreamServerInput.value = ''; xtreamPortInput.value = ''; xtreamUserInput.value = ''; xtreamPassInput.value = '';
             
             currentPlaylistType = null;
             currentLiveChannels = [];
@@ -690,12 +735,17 @@
                 });
                 this.on('waiting', function() { 
                     this.addClass('vjs-waiting'); 
-                    if(nowPlayingBar.style.display === 'flex') nowPlayingEpg.textContent = 'جارٍ التحميل...';
+                    if(nowPlayingBar.style.display === 'flex') {
+                        nowPlayingEpg.textContent = 'جارٍ التحميل...';
+                    }
                 });
                 this.on('canplay', function() {
                     this.removeClass('vjs-waiting'); 
                      if(currentSelectedChannel && nowPlayingBar.style.display === 'flex') {
-                        nowPlayingEpg.textContent = currentSelectedChannel.type === 'xtream_vod' ? (currentSelectedChannel.plot ? currentSelectedChannel.plot.substring(0,70) + '...' : 'فيلم') : currentSelectedChannel.epg_title;
+                        const epgText = currentSelectedChannel.type === 'xtream_vod' 
+                            ? (currentSelectedChannel.plot ? currentSelectedChannel.plot.substring(0,70) + '...' : (currentDisplayMode === 'vod' ? 'فيلم' : 'لا توجد معلومات')) 
+                            : currentSelectedChannel.epg_title;
+                        nowPlayingEpg.textContent = epgText;
                      }
                 });
                 this.on('playing', function() {
@@ -703,7 +753,10 @@
                     nowPlayingBar.style.display = 'flex'; 
                     if(currentSelectedChannel) { 
                         nowPlayingChannelName.textContent = currentSelectedChannel.name;
-                        nowPlayingEpg.textContent = currentSelectedChannel.type === 'xtream_vod' ? (currentSelectedChannel.plot ? currentSelectedChannel.plot.substring(0,70) + '...' : 'فيلم') : currentSelectedChannel.epg_title;
+                        const epgText = currentSelectedChannel.type === 'xtream_vod' 
+                            ? (currentSelectedChannel.plot ? currentSelectedChannel.plot.substring(0,70) + '...' : (currentDisplayMode === 'vod' ? 'فيلم' : 'لا توجد معلومات')) 
+                            : currentSelectedChannel.epg_title;
+                        nowPlayingEpg.textContent = epgText;
                     }
                 });
             });
@@ -716,6 +769,7 @@
                  m3uErrorPopup.classList.add('hidden');
             } else { 
                 xtreamServerInput.value = '';
+                xtreamPortInput.value = '';
                 xtreamUserInput.value = '';
                 xtreamPassInput.value = '';
                 xtreamErrorPopup.classList.add('hidden');
@@ -805,7 +859,7 @@
                 channelDiv.dataset.streamId = channel.stream_id; 
                 channelDiv.dataset.type = channel.type; 
                 channelDiv.dataset.name = channel.name; 
-                channelDiv.dataset.epg = channel.epg_title; 
+                channelDiv.dataset.epg = channel.type === 'xtream_vod' ? (channel.plot || 'فيلم') : channel.epg_title; 
                 if (channel.type === 'xtream_vod') {
                     channelDiv.dataset.containerExtension = channel.container_extension;
                     channelDiv.dataset.plot = channel.plot;
@@ -928,12 +982,15 @@
                 if (channel.container_extension && channel.container_extension.toLowerCase() === 'mp4') {
                     streamType = 'video/mp4';
                 }
+                 nowPlayingEpg.textContent = channel.plot ? channel.plot.substring(0,70) + '...' : 'فيلم';
             } else if (channel.type === 'xtream') { 
                 streamUrl = `${currentXtreamConfig.server}/live/${currentXtreamConfig.user}/${currentXtreamConfig.pass}/${channel.stream_id}.m3u8`;
+                nowPlayingEpg.textContent = channel.epg_title;
             } else if (channel.type === 'm3u') { 
                 streamUrl = channel.url;
                 if (streamUrl.includes('.mpd')) streamType = 'application/dash+xml';
                 else if (streamUrl.includes('.mp4')) streamType = 'video/mp4';
+                nowPlayingEpg.textContent = channel.epg_title;
             }
             
             if (!streamUrl) { showModal("خطأ في الرابط", "لم يتمكن من تحديد رابط البث."); return; }
@@ -944,7 +1001,7 @@
             videoJsPlayer.play().catch(error => console.error("Video.js play error:", error));
 
             nowPlayingChannelName.textContent = channel.name;
-            nowPlayingEpg.textContent = channel.type === 'xtream_vod' ? (channel.plot ? channel.plot.substring(0,70) + '...' : 'فيلم') : channel.epg_title;
+            // EPG text is now set based on type within the if/else block above
         }
 
         async function processM3uDataAndPlay(data) { 
@@ -992,7 +1049,9 @@
                 console.error('فشل تحميل M3U URL:', error.message);
                 let msg = 'فشل تحميل M3U من الرابط.';
                 if (error.message.startsWith("HTTP_ERROR_")) msg = `خطأ خادم (${error.message.split("_")[2]}).`;
-                else if (error.message.includes("NETWORK_ERROR") || error.message.toLowerCase().includes('fetch')) msg = "خطأ شبكة أو CORS.";
+                else if (error.name === 'TypeError' && error.message.toLowerCase().includes('failed to fetch')) {
+                    msg = "فشل الاتصال بالخادم لتحميل M3U. تحقق من الرابط، الشبكة، أو إعدادات CORS على الخادم.";
+                }
                 m3uErrorPopup.textContent = msg;
                 m3uErrorPopup.classList.remove('hidden');
             } finally {
@@ -1022,26 +1081,31 @@
             reader.readAsText(file);
         });
 
-        async function loadXtreamPlaylist(server, user, pass, type = 'live') { 
+        async function loadXtreamPlaylist(serverUrlFromConfig, user, pass, type = 'live') { 
             loaderXtreamPopup.classList.remove('hidden');
             xtreamErrorPopup.classList.add('hidden');
-            currentXtreamConfig = { server: server.startsWith('http') ? server : `http://${server}`, user, pass };
+            // currentXtreamConfig is already set by loadXtreamButton which calls this function
             currentPlaylistType = 'xtream';
+            console.log(`Attempting to load Xtream ${type} playlist from: ${serverUrlFromConfig}`);
 
             try {
                 if (type === 'live') {
                     currentDisplayMode = 'live';
-                    const catApiUrl = `${currentXtreamConfig.server}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`;
+                    const catApiUrl = `${serverUrlFromConfig}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`;
+                    console.log("Fetching live categories from:", catApiUrl);
                     const catResponse = await fetch(catApiUrl);
                     if (!catResponse.ok) throw new Error(`XTREAM_HTTP_ERROR_CATEGORIES_${catResponse.status}`);
                     currentLiveCategories = (await catResponse.json()) || [];
                     if (!Array.isArray(currentLiveCategories)) currentLiveCategories = [];
+                    console.log("Live categories fetched:", currentLiveCategories);
 
 
-                    const streamsApiUrl = `${currentXtreamConfig.server}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
+                    const streamsApiUrl = `${serverUrlFromConfig}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
+                    console.log("Fetching live streams from:", streamsApiUrl);
                     const streamsResponse = await fetch(streamsApiUrl);
                     if (!streamsResponse.ok) throw new Error(`XTREAM_HTTP_ERROR_STREAMS_${streamsResponse.status}`);
                     const streamsData = (await streamsResponse.json()) || [];
+                    console.log("Live streams data fetched:", streamsData);
                     
                     if (Array.isArray(streamsData) && streamsData.length > 0) {
                         currentLiveChannels = streamsData.map(ch => ({
@@ -1063,16 +1127,28 @@
                     } else if (streamsData.user_info && streamsData.user_info.auth === 0) {
                          throw new Error("XTREAM_AUTH_FAILED"); 
                     } else {
+                        currentLiveChannels = []; 
+                        currentLiveCategories = []; 
                         throw new Error("NO_LIVE_STREAMS");
                     }
                 }
             } catch (error) {
-                console.error(`فشل تحميل قائمة ${type === 'live' ? 'البث المباشر' : 'VOD'} من Xtream:`, error.message);
+                console.error(`فشل تحميل قائمة ${type === 'live' ? 'البث المباشر' : 'VOD'} من Xtream:`, error);
+                console.error("Full fetch error object:", error); 
                 let msg = `فشل تحميل قائمة ${type === 'live' ? 'البث المباشر' : 'VOD'} من Xtream.`;
-                if (error.message.includes("XTREAM_AUTH_FAILED")) msg = "فشل المصادقة. تحقق من بيانات الاعتماد.";
-                else if (error.message.includes("XTREAM_HTTP_ERROR")) msg = `خطأ خادم Xtream.`;
-                else if (error.message.includes("NO_LIVE_STREAMS")) msg = "لم يتم العثور على قنوات بث مباشر.";
-                else if (error.message.toLowerCase().includes('fetch')) msg = "خطأ شبكة أو CORS عند الاتصال بـ Xtream.";
+                
+                if (error.message.includes("XTREAM_AUTH_FAILED")) {
+                     msg = "فشل المصادقة. تحقق من بيانات الاعتماد.";
+                } else if (error.message.includes("XTREAM_HTTP_ERROR_CATEGORIES_") || error.message.includes("XTREAM_HTTP_ERROR_STREAMS_")) {
+                    const statusCode = error.message.split("_").pop();
+                    msg = `خطأ من الخادم (كود: ${statusCode}). تأكد من صحة الرابط وبيانات الاعتماد.`;
+                } else if (error.message.includes("NO_LIVE_STREAMS")) {
+                    msg = "لم يتم العثور على قنوات بث مباشر.";
+                } else if (error.name === 'TypeError' && error.message.toLowerCase().includes('failed to fetch')) { 
+                    msg = "فشل الاتصال بالخادم. الأسباب المحتملة: 1. مشكلة في الشبكة. 2. رابط الخادم أو بيانات الاعتماد غير صحيحة. 3. مشكلة CORS: إذا كنت تشغل هذا الملف محليًا، قد يمنع المتصفح الاتصال بالخادم بسبب سياسات الأمان. تأكد أن الخادم يسمح بالاتصالات من هذا المصدر.";
+                } else if (error instanceof SyntaxError) { 
+                    msg = "استجابة غير صالحة من الخادم (ليست JSON). قد يكون الرابط أو بيانات الاعتماد خاطئة، أو أن الخادم لا يعمل بشكل صحيح.";
+                }
                 xtreamErrorPopup.textContent = msg;
                 xtreamErrorPopup.classList.remove('hidden');
                 showScreen(xtreamInputScreen); 
@@ -1082,11 +1158,61 @@
         }
         
         loadXtreamButton.addEventListener('click', async () => {
-            const server = xtreamServerInput.value.trim();
+            let serverFieldValue = xtreamServerInput.value.trim();
+            const portFieldValue = xtreamPortInput.value.trim();
             const user = xtreamUserInput.value.trim();
             const pass = xtreamPassInput.value.trim();
-            if (!server || !user || !pass) { xtreamErrorPopup.textContent = 'الرجاء ملء جميع الحقول.'; xtreamErrorPopup.classList.remove('hidden'); return; }
-            await loadXtreamPlaylist(server, user, pass, 'live'); 
+
+            if (!serverFieldValue || !user || !pass) { 
+                xtreamErrorPopup.textContent = 'الرجاء ملء حقول الخادم، اسم المستخدم، وكلمة المرور.'; 
+                xtreamErrorPopup.classList.remove('hidden'); 
+                return; 
+            }
+            xtreamErrorPopup.classList.add('hidden'); 
+
+            let scheme = '';
+            if (serverFieldValue.startsWith('http://')) {
+                scheme = 'http://';
+                serverFieldValue = serverFieldValue.substring(7);
+            } else if (serverFieldValue.startsWith('https://')) {
+                scheme = 'https://';
+                serverFieldValue = serverFieldValue.substring(8);
+            } else {
+                scheme = 'http://'; 
+            }
+
+            if (serverFieldValue.endsWith('/')) {
+                serverFieldValue = serverFieldValue.slice(0, -1);
+            }
+
+            let host = serverFieldValue;
+            let portToUse = portFieldValue; 
+
+            const colonIndex = serverFieldValue.lastIndexOf(':');
+            const slashAfterColon = colonIndex !== -1 ? serverFieldValue.indexOf('/', colonIndex) : -1;
+
+            if (colonIndex !== -1 && (slashAfterColon === -1 || slashAfterColon > colonIndex) ) {
+                const potentialPortInServerField = serverFieldValue.substring(colonIndex + 1);
+                if (!isNaN(parseInt(potentialPortInServerField))) {
+                    host = serverFieldValue.substring(0, colonIndex);
+                    portToUse = potentialPortInServerField; 
+                    if (portFieldValue && portFieldValue !== potentialPortInServerField) {
+                        console.warn("المنفذ محدد في حقل الخادم وفي حقل المنفذ المنفصل. سيتم استخدام المنفذ من حقل الخادم:", potentialPortInServerField);
+                        xtreamErrorPopup.textContent = `تنبيه: تم استخدام المنفذ (${potentialPortInServerField}) من عنوان الخادم.`;
+                        xtreamErrorPopup.classList.remove('hidden');
+                    } else if (portFieldValue && portFieldValue === potentialPortInServerField) {
+                        xtreamErrorPopup.classList.add('hidden');
+                    }
+                }
+            }
+            
+            let finalServerUrl = scheme + host;
+            if (portToUse) { 
+                finalServerUrl += `:${portToUse}`;
+            }
+            
+            currentXtreamConfig = { server: finalServerUrl, user, pass }; 
+            await loadXtreamPlaylist(finalServerUrl, user, pass, 'live'); 
         });
 
         async function fetchAndDisplayXtreamVod() {
@@ -1097,20 +1223,23 @@
             showModal("جاري تحميل VOD...", "<div class='loader mx-auto my-2'></div>", false);
             messageConfirmButton.style.display = 'none';
 
-
             try {
-                const { server, user, pass } = currentXtreamConfig;
+                const { server, user, pass } = currentXtreamConfig; 
                 const vodCatApiUrl = `${server}/player_api.php?username=${user}&password=${pass}&action=get_vod_categories`;
+                console.log("Fetching VOD categories from:", vodCatApiUrl);
                 const vodCatResponse = await fetch(vodCatApiUrl);
                 if (!vodCatResponse.ok) throw new Error(`XTREAM_VOD_CAT_ERROR_${vodCatResponse.status}`);
                 currentVodCategories = (await vodCatResponse.json()) || [];
                  if (!Array.isArray(currentVodCategories)) currentVodCategories = [];
+                console.log("VOD categories fetched:", currentVodCategories);
 
 
                 const vodStreamsApiUrl = `${server}/player_api.php?username=${user}&password=${pass}&action=get_vod_streams`;
+                console.log("Fetching VOD streams from:", vodStreamsApiUrl);
                 const vodStreamsResponse = await fetch(vodStreamsApiUrl);
                 if (!vodStreamsResponse.ok) throw new Error(`XTREAM_VOD_STREAMS_ERROR_${vodStreamsResponse.status}`);
                 const vodStreamsData = (await vodStreamsResponse.json()) || [];
+                console.log("VOD streams data fetched:", vodStreamsData);
 
                 if (Array.isArray(vodStreamsData) && vodStreamsData.length > 0) {
                     currentVodChannels = vodStreamsData.map(ch => ({
@@ -1118,15 +1247,15 @@
                         logo: ch.stream_icon || ch.movie_image || 'https://placehold.co/40x60/1F2937/9CA3AF?text=VOD', 
                         stream_id: ch.stream_id.toString(), 
                         category_id: ch.category_id.toString(), 
-                        epg_title: ch.name, 
+                        epg_title: ch.name, // For VOD, EPG is the movie title itself
                         type: 'xtream_vod',
                         container_extension: ch.container_extension || 'mp4', 
                         plot: ch.plot || '',
                         rating: ch.rating || 'N/A',
                         releasedate: ch.releasedate || ''
                     }));
-                    allChannels = [...currentVodChannels];
-                    allCategories = [...currentVodCategories];
+                    allChannels = [...currentVodChannels]; // Set current display to VOD
+                    allCategories = [...currentVodCategories]; // Set current display to VOD categories
                     
                     messageBox.classList.add('hidden'); 
                     displayCategoriesList(allCategories); 
@@ -1136,14 +1265,24 @@
                         initializeVideoJsPlayer();
                     }
                 } else {
+                     currentVodChannels = []; 
+                     currentVodCategories = []; 
                      throw new Error("NO_VOD_STREAMS");
                 }
             } catch (error) {
                 console.error("فشل تحميل Xtream VOD:", error);
+                console.error("Full VOD fetch error object:", error); 
                 messageBox.classList.add('hidden'); 
                 let errorMsg = "فشل تحميل قائمة VOD.";
                 if (error.message.includes("NO_VOD_STREAMS")) errorMsg = "لم يتم العثور على أفلام (VOD).";
-                else if (error.message.includes("XTREAM_VOD")) errorMsg = "خطأ في الاتصال بخادم VOD.";
+                else if (error.message.includes("XTREAM_VOD_CAT_ERROR_") || error.message.includes("XTREAM_VOD_STREAMS_ERROR_")) {
+                     const statusCode = error.message.split("_").pop();
+                     errorMsg = `خطأ من خادم VOD (كود: ${statusCode}).`;
+                } else if (error.name === 'TypeError' && error.message.toLowerCase().includes('failed to fetch')) { 
+                    errorMsg = "فشل الاتصال بخادم VOD. الأسباب المحتملة: 1. مشكلة في الشبكة. 2. رابط الخادم أو بيانات الاعتماد غير صحيحة. 3. مشكلة CORS: إذا كنت تشغل هذا الملف محليًا، قد يمنع المتصفح الاتصال بالخادم بسبب سياسات الأمان. تأكد أن الخادم يسمح بالاتصالات من هذا المصدر.";
+                } else if (error instanceof SyntaxError) { 
+                    errorMsg = "استجابة غير صالحة من خادم VOD (ليست JSON).";
+                }
                 showModal("خطأ VOD", errorMsg);
             }
         }
