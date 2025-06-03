@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>mce6r - login</title>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #10b981; 
+            --primary-hover-color: #047857; 
+            --background-dark: #000000;
+            --panel-background: rgba(0, 1, 2, 0.99);
+            --text-primary: #e0e3e7;
+            --text-secondary: #6b7f94;
+            --border-color: rgba(8, 12, 25, 0.99); 
+            --input-background: rgba(4, 6, 15, 0.995);
+            --item-hover-bg: rgba(8, 12, 30, 0.995);
+            --item-active-bg: var(--primary-hover-color);
+            --dialog-bg: rgba(1, 2, 3, 0.999);
+        }
+        html, body {
+            height: 100%; margin: 0; padding: 0; overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-dark); 
+            color: var(--text-primary); 
+            display: flex; align-items: center; justify-content: center;
+            font-size: clamp(0.6rem, 1.8vw, 0.825rem); 
+        }
+        .list-item { 
+            cursor: pointer;
+            transition: background-color 0.01s ease, transform 0.005s ease, box-shadow 0.02s ease; 
+            padding: clamp(0.12rem, 0.6vh, 0.3rem) clamp(0.15rem, 0.9vw, 0.525rem); 
+            border-radius: 0.03rem; 
+        }
+        .list-item:hover {
+            background-color: var(--item-hover-bg); 
+            transform: translateX(-0.5px); 
+        }
+        .list-item.active {
+            background-color: var(--item-active-bg); 
+            color: white;
+            box-shadow: 0 0 2px rgba(16, 185, 129, 0.15); 
+        }
+        .loader, .gemini-loader {
+            border: 0.5px solid #4b5563; border-top: 0.5px solid var(--primary-hover-color); 
+            border-radius: 50%; width: 8px; height: 8px; 
+            animation: spin 0.1s linear infinite; margin: 1.5px auto; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; } 
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(31, 41, 55, 0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.3); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 0.5); }
+        
+        .screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #010204 0%, #000000 100%); 
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; transition: opacity 0.02s ease-out, visibility 0.02s ease-out;
+            padding: 0.3rem; 
+        }
+        .screen.hidden-screen { opacity: 0; visibility: hidden; }
+
+        .dialog-box { 
+            background-color: var(--dialog-bg); 
+            padding: clamp(0.25rem, 2vw, 0.75rem); 
+            border-radius: 0.075rem; 
+            box-shadow: 0 1.5px 3px -0.75px rgba(0,0,0,0.1); 
+            width: 100%;
+            border: 0.5px solid var(--border-color); 
+            animation: scaleUp 0.02s ease-out;
+        }
+        #loginBox { max-width: 90vw; sm:max-width: 220px; } 
+        #mainMenuBox { max-width: 90vw; sm:max-width: 280px; } 
+        #settingsBox { max-width: 90vw; sm:max-width: 320px; } 
+        #m3uInputScreenBox, #xtreamInputScreenBox { max-width: 90vw; sm:max-width: 340px; }
+
+
+        .input-field { 
+            background-color: var(--input-background); border: 0.5px solid #0c1018; 
+            color: var(--text-primary); font-size: clamp(0.55rem, 1.6vw, 0.75rem); 
+            border-radius: 0.0075rem; 
+            padding: clamp(0.15rem, 0.7vh, 0.2rem); 
+            transition: border-color 0.003s ease, box-shadow 0.003s ease;
+        }
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.5px rgba(16, 185, 129, 0.03); 
+            outline: none;
+        }
+        .action-button { 
+            background-color: var(--primary-color); color: white;
+            font-weight: 500; border-radius: 0.0075rem; 
+            font-size: clamp(0.55rem, 1.6vw, 0.75rem); 
+            padding: clamp(0.15rem, 0.7vh, 0.2rem) clamp(0.2rem, 1vw, 0.35rem); 
+            transition: background-color 0.01s ease;
+        }
+        .action-button:hover { background-color: var(--primary-hover-color); }
+        
+        #playerUiContainer {
+            display: none; width: 100%; height: 100vh; position: relative; 
+            background-size: cover; background-position: center;
+            background-image: url('https://placehold.co/1920x1080/000000/111111?text=Loading+Interface...'); 
+        }
+        #playerUiContainer.visible { display: flex; animation: fadeIn 0.02s ease-out; }
+
+        .panel-container { 
+            background-color: var(--panel-background); 
+            backdrop-filter: blur(75px) saturate(10%); 
+            height: 100%; display: flex; flex-direction: column;
+            overflow-y: auto; box-shadow: 0.5px 0 0.5px rgba(0,0,0,0.01); 
+            flex-shrink: 0; 
+        }
+
+
+        .main-video-area-wrapper { 
+            flex-grow: 1; display: flex; flex-direction: column;
+            background-color: #000000; height: 100%;
+            min-width: 0; 
+        }
+        #nowPlayingBar {
+            background: linear-gradient(to bottom, rgba(1, 2, 4, 0.9999), rgba(0, 0, 1, 0.9999));
+            padding: clamp(0.1rem, 0.3vh, 0.15rem) clamp(0.15rem, 0.6vw, 0.2rem); 
+            color: var(--text-primary);
+            font-size: clamp(0.55rem, 1.4vw, 0.75rem); 
+            border-bottom: 0.5px solid var(--border-color); 
+            display: none; 
+            text-align: right; 
+            box-shadow: 0 0.5px 0.5px rgba(0,0,0,0.001); 
+            min-height: 8px; 
+            display: flex; 
+            align-items: center;
+            justify-content: space-between; 
+        }
+        #nowPlayingBar .channel-details { 
+            display: flex; 
+            align-items: center; 
+            overflow: hidden; 
+            flex-grow: 1; 
+            margin-right: 0.1rem; 
+        }
+        #nowPlayingBar i.fa-play-circle {
+            color: var(--primary-color);
+            margin-left: 0.05rem; 
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem); 
+            flex-shrink: 0;
+        }
+        #nowPlayingChannelName { 
+            font-weight: 600; 
+            color: var(--primary-color); 
+            margin-left: 0.02rem; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            font-size: clamp(0.6rem, 1.6vw, 0.85rem); 
+        }
+        #nowPlayingEpg { 
+            color: var(--text-secondary); 
+            font-size: clamp(0.5rem, 1.3vw, 0.7rem); 
+            display: inline; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            flex-shrink: 1; 
+            min-width: 8px; 
+            margin-left: 0.1rem; 
+        }
+        #nowPlayingTime { 
+            font-size: clamp(0.5rem, 1.2vw, 0.7rem); 
+            color: var(--text-secondary); 
+            flex-shrink: 0; 
+        } 
+
+
+        .main-video-area { 
+            flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            min-height: 0; 
+        }
+        .channel-info-epg { 
+            font-size: clamp(0.45rem, 1.2vw, 0.6rem); color: var(--text-secondary); 
+            margin-top: 0; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+            max-width: 100%; 
+        }
+        .video-js {
+            width: 100% !important; height: 100% !important; background-color: #000000;
+        }
+        .vjs-control-bar { background-color: rgba(1, 2, 4, 0.9995) !important; font-size: clamp(0.5rem, 1.2vw, 0.65rem); } 
+        .vjs-button > .vjs-icon-placeholder:before { font-size: clamp(0.15em, 0.9vw, 0.45em); line-height: 3.3; } 
+        .vjs-menu-button-popup .vjs-menu .vjs-menu-item:hover { background-color: var(--primary-hover-color) !important; }
+        .vjs-loading-spinner { border-color: var(--primary-color) !important; width: clamp(6px, 1.8vw, 12px) !important; height: clamp(6px, 1.8vw, 12px) !important; border-width: clamp(0.6px, 0.18vw, 1.2px) !important;} 
+        .vjs-loading-spinner:before, .vjs-loading-spinner:after { border-top-color: var(--primary-color) !important; }
+        .vjs-text-track-display > div > div { font-size: clamp(0.5rem, 1.2vh, 0.75rem) !important; } 
+
+        .main-menu-item {
+            background-color: rgba(31, 41, 55, 0.9999); 
+            border: 0.5px solid var(--border-color); 
+            border-radius: 0.01rem; 
+            padding: clamp(0.25rem, 1vh, 0.4rem) clamp(0.2rem, 1vw, 0.5rem); 
+            text-align: center; color: var(--text-primary); 
+            transition: all 0.0005s ease-in-out; cursor: pointer;
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+            min-height: 3rem; 
+        }
+        .main-menu-item:hover {
+            background-color: rgba(55, 65, 81, 1);
+            transform: translateY(0px) scale(1.000001); 
+            box-shadow: 0 0.075px 0.15px rgba(0,0,0,0.001);
+        }
+        .main-menu-item i {
+            font-size: clamp(0.7rem, 2vw, 1rem); 
+            margin-right: 0.5rem; 
+            margin-left: 0.2rem; 
+            color: var(--primary-color); 
+        }
+        .main-menu-item span {
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem); font-weight: 500; 
+        }
+        .placeholder-text {
+            color: var(--text-secondary); text-align: center; font-size: clamp(0.5rem, 1.2vw, 0.6rem); padding: 0.0075rem; 
+        }
+        .settings-item {
+            background-color: rgba(31,41,55,0.995); padding: clamp(0.08rem, 0.4vh, 0.1rem) clamp(0.08rem, 0.7vw, 0.15rem); border-radius: 0.0075rem; 
+            margin-bottom: 0.015rem; display: flex; justify-content: space-between; align-items: center;
+            font-size: clamp(0.5rem, 1.4vw, 0.7rem); 
+        }
+        .settings-item i.fas { color: var(--primary-color); margin-right: 0.25rem; font-size: 0.9em; } 
+        .settings-item .control { margin-left: auto; }
+
+        .toggle-switch { 
+            position: relative; display: inline-block; width: 2.5rem; height: 1.25rem; 
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #4b5563; transition: .005s; border-radius: 1.25rem; 
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 1rem; width: 1rem; 
+            left: 0.125rem; bottom: 0.125rem; background-color: white; 
+            transition: .005s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(1.25rem); } 
+
+        .select-dropdown {
+            background-color: var(--input-background); color: var(--text-primary);
+            border: 0.5px solid #18202c; border-radius: 0.0005rem; 
+            padding: clamp(0.08rem, 0.3vh, 0.1rem) clamp(0.05rem, 0.5vw, 0.1rem); 
+            font-size: clamp(0.5rem, 1.2vw, 0.65rem); 
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238DA0B4%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: left 0.25rem center; 
+            background-size: 0.6em; 
+            padding-left: 1.2rem; 
+        }
+        .select-dropdown:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.5px rgba(16, 185, 129, 0.03); 
+            outline: none;
+        }
+        .panel-header {
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem); font-weight: 600; margin-bottom: 0.0075rem; 
+            color: var(--text-primary); border-bottom: 0.5px solid var(--border-color); 
+            padding-bottom: 0.0075rem; text-align: center;
+        }
+        .main-menu-title {
+            font-size: clamp(0.7rem, 2vw, 1rem); 
+            font-weight: 700; 
+            color: var(--primary-color);
+            text-shadow: 0 0 0.8px rgba(16, 185, 129, 0.07); 
+        }
+        .main-menu-logo {
+            width: clamp(0.8rem, 2vw, 1.2rem); 
+            height: clamp(0.8rem, 2vw, 1.2rem); 
+            border-radius: 0.0075rem;
+        }
+        .dialog-box-title { 
+            font-size: clamp(0.65rem, 1.9vw, 0.95rem); 
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.075rem; 
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dialog-box-title i { margin-right: 0.25rem; font-size: 1em; } 
+        .input-screen-button { 
+            background-color: var(--primary-color); color: white;
+            font-weight: 500; border-radius: 0.02rem; 
+            font-size: clamp(0.55rem, 1.5vw, 0.75rem); 
+            padding: clamp(0.15rem, 0.6vh, 0.2rem) clamp(0.15rem, 0.9vw, 0.3rem); 
+            transition: background-color 0.01s ease;
+            display: block; width: 100%; margin-top: 0.1rem; 
+        }
+        .input-screen-button:hover { background-color: var(--primary-hover-color); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    </style>
+</head>
+<body class="p-0"> 
+    <div id="loginScreen" class="screen">
+        <div id="loginBox" class="dialog-box">
+            <img src="https://placehold.co/20x20/10b981/FFFFFF?text=P" alt="شعار المشغل" class="mx-auto mb-1.5 rounded-md w-5 h-5 shadow-md"> 
+            <h2 class="dialog-box-title"><i class="fas fa-sign-in-alt text-lg"></i>تسجيل الدخول</h2>
+            <div class="space-y-1.5"> 
+                <div>
+                    <input type="text" id="username" class="input-field w-full p-1.5" placeholder="اسم المستخدم">
+                </div>
+                <div>
+                    <input type="password" id="password" class="input-field w-full p-1.5" placeholder="كلمة المرور">
+                </div>
+                <button id="loginButton" class="action-button w-full mt-1.5 py-1.5 px-2"> 
+                    دخول
+                </button>
+            </div>
+            <p class="text-sm text-gray-600 mt-1.5">واجهة تجريبية.</p> 
+        </div>
+    </div>
+
+    <div id="mainMenuScreen" class="screen hidden-screen">
+        <div id="mainMenuBox" class="dialog-box">
+            <div class="flex justify-between items-center mb-1.5"> <h2 class="main-menu-title"> <i class="fas fa-rocket mr-1 text-emerald-500"></i> IPTV Pro Player </h2> 
+                <img src="https://placehold.co/16x16/10b981/FFFFFF?text=X" alt="شعار اللاعب" class="main-menu-logo"> 
+            </div>
+            <div id="mainMenuItemsContainer" class="flex flex-col space-y-1.5">  <div id="menuLiveTv" class="main-menu-item">
+                    <i class="fas fa-tv"></i>
+                    <span>البث المباشر</span>
+                </div>
+                 <div id="menuM3uPlaylist" class="main-menu-item">
+                    <i class="fas fa-file-audio"></i> <span>قائمة M3U</span>
+                </div>
+                <div id="menuXtreamCodes" class="main-menu-item">
+                    <i class="fas fa-server"></i> <span>Xtream Codes</span>
+                </div>
+                <div id="menuTvShows" class="main-menu-item">
+                    <i class="fas fa-photo-film"></i> 
+                    <span>برامج التلفزيون</span>
+                </div>
+                <div id="menuVod" class="main-menu-item">
+                    <i class="fas fa-video"></i> 
+                    <span>أفلام (VOD)</span>
+                </div>
+                <div id="menuSettings" class="main-menu-item">
+                    <i class="fas fa-sliders"></i>
+                    <span>الإعدادات</span>
+                </div>
+            </div>
+             <button id="menuLogout" class="action-button w-full mt-1.5 bg-red-800/30 hover:bg-red-700/50 text-red-300"> <i class="fas fa-right-from-bracket mr-1"></i> تسجيل الخروج
+            </button>
+        </div>
+    </div>
+
+    <div id="m3uInputScreen" class="screen hidden-screen">
+        <div id="m3uInputScreenBox" class="dialog-box">
+            <h2 class="dialog-box-title mb-1.5"><i class="fas fa-file-audio text-lg"></i> إضافة قائمة M3U</h2> 
+            <input type="url" id="m3uUrl" class="input-field w-full text-base p-1.5 mb-1.5" placeholder="رابط ملف M3U (URL)"> 
+            <button id="loadM3uUrlButton" class="input-screen-button py-1.5 mb-1.5">تحميل من الرابط</button>
+            <p class="text-center text-base my-1.5 text-gray-500">أو</p> 
+            <input type="file" id="m3uFile" accept=".m3u,.m3u8" class="block w-full text-base text-gray-400 file:mr-1.5 file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-base file:font-semibold file:bg-emerald-600/40 file:text-white hover:file:bg-emerald-700/60 cursor-pointer mb-1.5"> 
+            <p id="m3uErrorPopup" class="text-red-500 text-base mt-1.5 hidden"></p> 
+            <div id="loaderM3uPopup" class="loader hidden"></div>
+            <button id="backFromM3uInput" class="action-button w-full mt-1.5 bg-gray-600/40 hover:bg-gray-700/60">رجوع</button> 
+        </div>
+    </div>
+
+    <div id="xtreamInputScreen" class="screen hidden-screen">
+        <div id="xtreamInputScreenBox" class="dialog-box">
+            <h2 class="dialog-box-title mb-1.5"><i class="fas fa-server text-lg"></i> إضافة Xtream Codes</h2>
+            <input type="text" id="xtreamServer" class="input-field w-full text-base p-1.5 mb-1" placeholder="عنوان الخادم (مثال: my.server.com)">
+            <input type="text" id="xtreamPort" class="input-field w-full text-base p-1.5 mb-1" placeholder="المنفذ (اختياري، مثال: 8080)">
+            <input type="text" id="xtreamUser" class="input-field w-full text-base p-1.5 mb-1" placeholder="اسم المستخدم">
+            <input type="password" id="xtreamPass" class="input-field w-full text-base p-1.5 mb-1.5" placeholder="كلمة المرور">
+            <button id="loadXtreamButton" class="input-screen-button py-1.5 mb-1.5">تحميل من Xtream</button>
+            <p id="xtreamErrorPopup" class="text-red-500 text-base mt-1.5 hidden"></p> 
+            <div id="loaderXtreamPopup" class="loader hidden"></div>
+            <button id="backFromXtreamInput" class="action-button w-full mt-1.5 bg-gray-600/40 hover:bg-gray-700/60">رجوع</button> 
+        </div>
+    </div>
+    
+    <div id="settingsScreen" class="screen hidden-screen">
+        <div id="settingsBox" class="dialog-box">
+            <div class="flex justify-between items-center mb-1.5"> 
+                <h2 class="dialog-box-title"><i class="fas fa-cog"></i> الإعدادات</h2>
+                <button id="settingsBackToMenuButton" class="text-emerald-400 hover:text-emerald-300 text-sm p-1 rounded hover:bg-gray-700/25"> 
+                    <i class="fas fa-times text-sm"></i> 
+                </button>
+            </div>
+            <div class="space-y-1"> 
+                <div class="settings-item">
+                    <span><i class="fas fa-language"></i> لغة الواجهة</span>
+                    <div class="control">
+                        <select class="select-dropdown">
+                            <option value="ar">العربية</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <span><i class="fas fa-palette"></i> المظهر الداكن</span>
+                    <div class="control">
+                         <label class="toggle-switch">
+                            <input type="checkbox" id="themeToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <span><i class="fas fa-sync-alt"></i> تحديث قائمة التشغيل تلقائيًا</span>
+                     <div class="control">
+                         <label class="toggle-switch">
+                            <input type="checkbox" id="autoUpdateToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                 <div class="settings-item">
+                    <span><i class="fas fa-user-shield"></i> حسابي</span>
+                    <button class="action-button text-sm py-1 px-1 bg-sky-600/30 hover:bg-sky-700/50">إدارة</button> 
+                </div>
+                <div class="settings-item">
+                    <span><i class="fas fa-info-circle"></i> حول التطبيق</span>
+                    <span class="text-sm text-gray-500">الإصدار 1.0.8</span> 
+                </div>
+            </div>
+             <p class="text-sm text-gray-700 mt-1.5 text-center">خيارات الإعدادات هذه للعرض فقط حاليًا.</p> 
+        </div>
+    </div>
+
+    <div id="playerUiContainer">
+        <div id="categoriesPanel" class="panel-container p-1 custom-scrollbar"> 
+            <div class="flex justify-center items-center mb-1 p-1"> 
+                 <button id="backToMenuButtonPlayer" class="text-emerald-400 hover:text-emerald-300 text-sm p-1 rounded hover:bg-gray-700/20"> 
+                    <i class="fas fa-arrow-left text-sm mr-1"></i> القائمة 
+                </button>
+            </div>
+            <h2 id="categoriesHeader" class="panel-header mt-1">الفئات</h2> 
+            <div id="categoryList" class="custom-scrollbar flex-grow space-y-1 text-sm p-1"> 
+                <p class="placeholder-text">لم يتم تحميل فئات.</p>
+            </div>
+        </div>
+
+        <div id="channelsPanel" class="panel-container p-1 border-r border-l border-gray-700/20 custom-scrollbar"> 
+             <input type="text" id="channelSearch" class="input-field w-full text-sm p-1 mb-1 sticky top-0 z-20 backdrop-blur-sm bg-gray-800/25" placeholder="ابحث..."> 
+            <button id="suggestChannelsButton" class="mb-1 w-full action-button text-sm py-1 bg-teal-600/25 hover:bg-teal-700/40 disabled:opacity-25 disabled:cursor-not-allowed sticky top-1 z-20 backdrop-blur-sm bg-gray-800/25" disabled> 
+                <i class="fas fa-wand-magic-sparkles mr-1 text-sm"></i> اقتراح 
+            </button>
+            <div id="channelList" class="space-y-1 flex-grow pt-1 custom-scrollbar p-1"> 
+                <p class="placeholder-text">اختر فئة.</p>
+            </div>
+        </div>
+
+        <div class="main-video-area-wrapper">
+            <div id="nowPlayingBar">
+                <div class="channel-details">
+                    <i class="fas fa-play-circle"></i>
+                    <span id="nowPlayingChannelName" class="truncate">اسم القناة</span> 
+                </div>
+                <span id="nowPlayingEpg" class="truncate">معلومات البرنامج الحالي</span>
+                 <span id="nowPlayingTime" class="ml-auto">00:00:00</span> 
+            </div>
+            <div class="main-video-area">
+                <video id="iptvPlayer" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" poster="https://placehold.co/1920x1080/0a0a0a/333333?text=IPTV+Professional+Player">
+                     <p class="vjs-no-js">
+                        لعرض هذا الفيديو، يرجى تمكين JavaScript، والنظر في الترقية إلى متصفح ويب
+                        <a href="https://videojs.com/html5-video-support/" target="_blank">يدعم فيديو HTML5</a>
+                    </p>
+                </video>
+            </div>
+        </div>
+
+        <div id="messageBox" class="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 hidden z-[1001]">
+            <div class="bg-gray-900/95 p-1 rounded-lg shadow-2xl max-w-xs w-full border border-gray-700/20 backdrop-blur-md">  
+                <div class="flex justify-between items-center mb-1"> 
+                    <h3 id="messageTitle" class="text-base font-semibold text-emerald-400">رسالة</h3> 
+                    <button id="messageCloseButton" class="text-gray-600 hover:text-gray-400 text-lg leading-none">&times;</button> 
+                </div>
+                <div id="messageText" class="text-sm text-gray-300 mb-1 max-h-24 overflow-y-auto suggestions-list custom-scrollbar"></div> 
+                <div id="geminiLoader" class="gemini-loader hidden my-1"></div> 
+                <button id="messageConfirmButton" class="action-button w-full text-sm py-1"> 
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script>
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const loginButton = document.getElementById('loginButton');
+        const mainMenuScreen = document.getElementById('mainMenuScreen');
+        const settingsScreen = document.getElementById('settingsScreen'); 
+        const playerUiContainer = document.getElementById('playerUiContainer');
+        const m3uInputScreen = document.getElementById('m3uInputScreen');
+        const xtreamInputScreen = document.getElementById('xtreamInputScreen');
+
+
+        const menuLiveTvButton = document.getElementById('menuLiveTv');
+        const menuM3uPlaylistButton = document.getElementById('menuM3uPlaylist'); 
+        const menuXtreamCodesButton = document.getElementById('menuXtreamCodes'); 
+        const menuTvShowsButton = document.getElementById('menuTvShows');
+        const menuVodButton = document.getElementById('menuVod');
+        const menuSettingsButton = document.getElementById('menuSettings');
+        const menuLogoutButton = document.getElementById('menuLogout');
+        const backToMenuButtonPlayer = document.getElementById('backToMenuButtonPlayer'); 
+        const settingsBackToMenuButton = document.getElementById('settingsBackToMenuButton');
+        const backFromM3uInputButton = document.getElementById('backFromM3uInput');
+        const backFromXtreamInputButton = document.getElementById('backFromXtreamInput');
+
+
+        const m3uUrlInput = document.getElementById('m3uUrl');
+        const loadM3uUrlButton = document.getElementById('loadM3uUrlButton');
+        const m3uFileInput = document.getElementById('m3uFile');
+        const m3uErrorPopup = document.getElementById('m3uErrorPopup'); 
+        const loaderM3uPopup = document.getElementById('loaderM3uPopup'); 
+
+
+        const xtreamServerInput = document.getElementById('xtreamServer');
+        const xtreamPortInput = document.getElementById('xtreamPort'); 
+        const xtreamUserInput = document.getElementById('xtreamUser');
+        const xtreamPassInput = document.getElementById('xtreamPass');
+        const loadXtreamButton = document.getElementById('loadXtreamButton');
+        const xtreamErrorPopup = document.getElementById('xtreamErrorPopup'); 
+        const loaderXtreamPopup = document.getElementById('loaderXtreamPopup'); 
+        
+        const channelListDiv = document.getElementById('channelList');
+        const videoPlayerElement = document.getElementById('iptvPlayer');
+        let videoJsPlayer = null; 
+        const channelSearchInput = document.getElementById('channelSearch');
+        const suggestChannelsButton = document.getElementById('suggestChannelsButton');
+        const categoryListDiv = document.getElementById('categoryList');
+        const categoriesHeader = document.getElementById('categoriesHeader'); 
+
+        const messageBox = document.getElementById('messageBox');
+        const messageTitle = document.getElementById('messageTitle');
+        const messageText = document.getElementById('messageText');
+        const messageCloseButton = document.getElementById('messageCloseButton');
+        const messageConfirmButton = document.getElementById('messageConfirmButton');
+        const geminiLoader = document.getElementById('geminiLoader');
+
+        const nowPlayingBar = document.getElementById('nowPlayingBar');
+        const nowPlayingChannelName = document.getElementById('nowPlayingChannelName');
+        const nowPlayingEpg = document.getElementById('nowPlayingEpg');
+        const nowPlayingTime = document.getElementById('nowPlayingTime'); 
+ 
+        // Global state variables
+        let allChannels = []; 
+        let allCategories = []; 
+        
+        let currentLiveChannels = [];
+        let currentLiveCategories = [];
+        let currentVodChannels = [];
+        let currentVodCategories = [];
+
+        let currentPlaylistType = null; 
+        let currentDisplayMode = 'live'; 
+
+        let currentSelectedChannel = null;
+        let currentXtreamConfig = {}; 
+        let clockInterval = null;
+
+        function updateClock() {
+            if (nowPlayingBar.style.display !== 'none' && nowPlayingBar.style.display !== '') { 
+                const now = new Date();
+                nowPlayingTime.textContent = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            }
+        }
+
+        function showScreen(screenElement) {
+            [loginScreen, mainMenuScreen, settingsScreen, m3uInputScreen, xtreamInputScreen].forEach(s => s.classList.add('hidden-screen'));
+            playerUiContainer.classList.remove('visible'); 
+            playerUiContainer.style.display = 'none'; 
+            nowPlayingBar.style.display = 'none'; 
+            if(clockInterval) clearInterval(clockInterval);
+            clockInterval = null;
+
+            if (screenElement) {
+                 screenElement.classList.remove('hidden-screen');
+                 if(screenElement.id === 'playerUiContainer') {
+                    playerUiContainer.style.display = 'flex'; 
+                    playerUiContainer.classList.add('visible');
+                    if (!clockInterval) { 
+                        updateClock(); 
+                        clockInterval = setInterval(updateClock, 1000);
+                    }
+                 }
+            }
+        }
+        
+        loginButton.addEventListener('click', () => showScreen(mainMenuScreen));
+        
+        menuLiveTvButton.addEventListener('click', () => {
+            currentDisplayMode = 'live';
+            if (!currentPlaylistType) {
+                showModal("تنبيه", "يرجى إضافة قائمة تشغيل أولاً.");
+                return;
+            }
+
+            if (currentPlaylistType === 'm3u') {
+                allChannels = [...currentLiveChannels];
+                allCategories = [...currentLiveCategories];
+            } else if (currentPlaylistType === 'xtream') {
+                if (currentLiveChannels.length === 0 && currentXtreamConfig.server) {
+                     // This case should ideally be handled by ensuring live channels are loaded after Xtream login.
+                     // Or, if switching from VOD view, re-fetch or use stored live channels.
+                     console.log("Attempting to show live channels for Xtream, ensuring they are loaded.");
+                     // If you want to force re-fetch:
+                     // loadXtreamPlaylist(currentXtreamConfig.server, currentXtreamConfig.user, currentXtreamConfig.pass, 'live');
+                     // return; // Wait for re-fetch to complete
+                }
+                allChannels = [...currentLiveChannels];
+                allCategories = [...currentLiveCategories];
+            }
+            
+            if (allChannels.length > 0) {
+                displayCategoriesList(allCategories);
+                filterChannelsByCategory(allCategories.length > 0 ? allCategories[0].category_id : 'all'); // Default to first category or 'all'
+                showScreen(playerUiContainer);
+                 // Auto-select and play logic can be refined here if needed
+                const firstChannelItem = channelListDiv.querySelector('.list-item');
+                if (firstChannelItem && !currentSelectedChannel) { 
+                    //  firstChannelItem.click(); // Consider if auto-play is desired on view switch
+                } else if (currentSelectedChannel && currentSelectedChannel.type.startsWith(currentDisplayMode) ) {
+                    highlightChannelByName(currentSelectedChannel.name);
+                }
+            } else {
+                 showModal("تنبيه", "لم يتم تحميل قنوات البث المباشر. يرجى المحاولة مرة أخرى أو التحقق من قائمة التشغيل.");
+            }
+        });
+
+        menuM3uPlaylistButton.addEventListener('click', () => showScreen(m3uInputScreen));
+        menuXtreamCodesButton.addEventListener('click', () => showScreen(xtreamInputScreen));
+        menuTvShowsButton.addEventListener('click', () => showModal("برامج التلفزيون", "هذه الميزة قيد التطوير حاليًا."));
+        
+        menuVodButton.addEventListener('click', async () => {
+            currentDisplayMode = 'vod';
+            if (!currentPlaylistType) {
+                showModal("تنبيه", "يرجى إضافة قائمة تشغيل أولاً.");
+                return;
+            }
+
+            if (currentPlaylistType === 'm3u') {
+                allChannels = [...currentLiveChannels]; 
+                allCategories = [...currentLiveCategories];
+                displayCategoriesList(allCategories);
+                filterChannelsByCategory(allCategories.length > 0 ? allCategories[0].category_id : 'all');
+                showScreen(playerUiContainer);
+                showModal("معلومة عن M3U VOD", "يتم عرض محتوى الفيديو حسب الطلب (VOD) من ملفات M3U ضمن نفس قوائم البث المباشر. يرجى تصفح الفئات والقنوات للعثور عليها. قد تحتاج لملف M3U مخصص للـ VOD للحصول على تجربة أفضل.");
+            } else if (currentPlaylistType === 'xtream') {
+                if (!currentXtreamConfig.server) {
+                     showModal("خطأ", "بيانات اعتماد Xtream غير محملة بشكل صحيح.");
+                     return;
+                }
+                // If VOD data isn't loaded yet, fetch it. Otherwise, just display it.
+                if (currentVodChannels.length === 0) {
+                    await fetchAndDisplayXtreamVod();
+                } else {
+                    allChannels = [...currentVodChannels];
+                    allCategories = [...currentVodCategories];
+                    displayCategoriesList(allCategories);
+                    filterChannelsByCategory(allCategories.length > 0 ? allCategories[0].category_id : 'all');
+                    showScreen(playerUiContainer);
+                }
+            }
+        });
+
+        menuSettingsButton.addEventListener('click', () => showScreen(settingsScreen));
+        menuLogoutButton.addEventListener('click', () => resetAppToLogin());
+
+        backToMenuButtonPlayer.addEventListener('click', () => { 
+            if (videoJsPlayer && !videoJsPlayer.isDisposed()) videoJsPlayer.pause(); 
+            showScreen(mainMenuScreen);
+        });
+        settingsBackToMenuButton.addEventListener('click', () => showScreen(mainMenuScreen));
+        backFromM3uInputButton.addEventListener('click', () => showScreen(mainMenuScreen));
+        backFromXtreamInputButton.addEventListener('click', () => showScreen(mainMenuScreen));
+
+        function resetAppToLogin() {
+            resetPlayerUiState(); 
+            if (videoJsPlayer && !videoJsPlayer.isDisposed()) {
+                videoJsPlayer.dispose(); 
+                videoJsPlayer = null;
+            }
+            if(clockInterval) clearInterval(clockInterval);
+            clockInterval = null;
+            m3uUrlInput.value = ''; m3uFileInput.value = '';
+            xtreamServerInput.value = ''; xtreamPortInput.value = ''; xtreamUserInput.value = ''; xtreamPassInput.value = '';
+            
+            currentPlaylistType = null;
+            currentLiveChannels = [];
+            currentLiveCategories = [];
+            currentVodChannels = [];
+            currentVodCategories = [];
+            currentXtreamConfig = {};
+            currentSelectedChannel = null;
+            currentDisplayMode = 'live';
+
+            showScreen(loginScreen);
+        }
+
+        function initializeVideoJsPlayer() {
+            if (videoJsPlayer && !videoJsPlayer.isDisposed()) return; 
+            
+            const options = {
+                autoplay: true, controls: true, preload: 'auto', fluid: false, 
+                aspectRatio: '16:9', techOrder: ["html5"],
+                html5: { hls: { overrideNative: !videojs.browser.IS_SAFARI, smoothQualityChange: true, maxBufferHole: 5 } } 
+            };
+            videoJsPlayer = videojs(videoPlayerElement, options, function onPlayerReady() {
+                videojs.log('Video.js player is ready.');
+                this.on('error', function() {
+                    const error = this.error();
+                    console.error('Video.js Error:', error);
+                    let msg = `خطأ مشغل الفيديو (كود: ${error?.code || 'N/A'}, ${error?.message || 'غير معروف'})`;
+                    if (error && error.code === 4) msg = "فشل تحميل الفيديو. تحقق من الرابط أو الشبكة/CORS.";
+                    showModal("خطأ تشغيل الفيديو", msg);
+                    nowPlayingBar.style.display = 'none'; 
+                });
+                this.on('waiting', function() { 
+                    this.addClass('vjs-waiting'); 
+                    if(nowPlayingBar.style.display === 'flex') {
+                        nowPlayingEpg.textContent = 'جارٍ التحميل...';
+                    }
+                });
+                this.on('canplay', function() {
+                    this.removeClass('vjs-waiting'); 
+                     if(currentSelectedChannel && nowPlayingBar.style.display === 'flex') {
+                        const epgText = currentSelectedChannel.type === 'xtream_vod' 
+                            ? (currentSelectedChannel.plot ? currentSelectedChannel.plot.substring(0,70) + '...' : (currentDisplayMode === 'vod' ? 'فيلم' : 'لا توجد معلومات')) 
+                            : currentSelectedChannel.epg_title;
+                        nowPlayingEpg.textContent = epgText;
+                     }
+                });
+                this.on('playing', function() {
+                    this.removeClass('vjs-waiting'); 
+                    nowPlayingBar.style.display = 'flex'; 
+                    if(currentSelectedChannel) { 
+                        nowPlayingChannelName.textContent = currentSelectedChannel.name;
+                        const epgText = currentSelectedChannel.type === 'xtream_vod' 
+                            ? (currentSelectedChannel.plot ? currentSelectedChannel.plot.substring(0,70) + '...' : (currentDisplayMode === 'vod' ? 'فيلم' : 'لا توجد معلومات')) 
+                            : currentSelectedChannel.epg_title;
+                        nowPlayingEpg.textContent = epgText;
+                    }
+                });
+            });
+        }
+        
+        function clearInputFieldsAndErrors(isM3u) { 
+             if (isM3u) {
+                 m3uUrlInput.value = ''; 
+                 m3uFileInput.value = ''; 
+                 m3uErrorPopup.classList.add('hidden');
+            } else { 
+                xtreamServerInput.value = '';
+                xtreamPortInput.value = '';
+                xtreamUserInput.value = '';
+                xtreamPassInput.value = '';
+                xtreamErrorPopup.classList.add('hidden');
+            }
+        }
+        
+        function clearChannelAndCategoryLists() {
+            channelListDiv.innerHTML = '<p class="placeholder-text">اختر فئة لعرض القنوات.</p>';
+            categoryListDiv.innerHTML = '<p class="placeholder-text">لم يتم تحميل فئات بعد.</p>';
+            suggestChannelsButton.disabled = true;
+            nowPlayingBar.style.display = 'none';
+            categoriesHeader.textContent = "الفئات"; 
+        }
+
+        function resetPlayerUiState() { 
+            clearChannelAndCategoryLists(); 
+            allChannels = []; 
+            allCategories = []; 
+            channelSearchInput.value = ''; 
+            if (videoJsPlayer && !videoJsPlayer.isDisposed()) {
+                videoJsPlayer.reset(); 
+                videoJsPlayer.poster('https://placehold.co/1920x1080/0a0a0a/333333?text=IPTV+Professional+Player'); 
+            }
+        }
+
+        function showModal(title, contentHtml, isSuggestion = false) {
+            messageTitle.textContent = title;
+            messageText.innerHTML = contentHtml;
+            messageBox.classList.remove('hidden');
+            geminiLoader.classList.add('hidden'); 
+            messageConfirmButton.style.display = isSuggestion ? 'none' : 'block'; 
+            if (!isSuggestion) {
+                messageConfirmButton.textContent = 'إغلاق';
+                messageConfirmButton.onclick = () => messageBox.classList.add('hidden');
+            }
+        }
+        messageCloseButton.addEventListener('click', () => messageBox.classList.add('hidden'));
+        messageConfirmButton.addEventListener('click', () => messageBox.classList.add('hidden')); 
+
+        function parseM3U(data) {
+            const lines = data.split('\n');
+            const parsedChannels = [];
+            let currentChannelInfo = {};
+            const categoriesMap = new Map(); 
+
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (trimmedLine.startsWith('#EXTINF:')) {
+                    const nameMatch = trimmedLine.match(/tvg-name="([^"]*)"/) || trimmedLine.match(/group-title="[^"]*",([^,]*)$/);
+                    currentChannelInfo.name = nameMatch ? (nameMatch[1] || nameMatch[2] || 'غير مسمى').trim() : 'قناة غير مسماة';
+                    
+                    const logoMatch = trimmedLine.match(/tvg-logo="([^"]*)"/);
+                    currentChannelInfo.logo = logoMatch ? logoMatch[1] : 'https://placehold.co/40x40/1F2937/9CA3AF?text=►'; 
+                    
+                    const groupTitleMatch = trimmedLine.match(/group-title="([^"]*)"/);
+                    currentChannelInfo.category_name = groupTitleMatch ? groupTitleMatch[1].trim() : 'فئة غير محددة';
+                    currentChannelInfo.category_id = currentChannelInfo.category_name.toLowerCase().replace(/\s+/g, '_').replace(/[^\w-]+/g, '');
+
+                    if (!categoriesMap.has(currentChannelInfo.category_id)) {
+                        categoriesMap.set(currentChannelInfo.category_id, currentChannelInfo.category_name);
+                    }
+                    const epgTitleMatch = trimmedLine.match(/,(?!.*,)(.*)/); 
+                    currentChannelInfo.epg_title = epgTitleMatch && epgTitleMatch[1] && epgTitleMatch[1].trim() !== currentChannelInfo.name ? epgTitleMatch[1].trim() : "لا توجد معلومات EPG";
+
+                } else if (trimmedLine && !trimmedLine.startsWith('#')) {
+                    currentChannelInfo.url = trimmedLine;
+                    if (currentChannelInfo.name && currentChannelInfo.url) { 
+                        parsedChannels.push({...currentChannelInfo, type: 'm3u'}); 
+                    }
+                    currentChannelInfo = {}; 
+                }
+            }
+            currentLiveCategories = Array.from(categoriesMap, ([id, name]) => ({ category_id: id, category_name: name }));
+            return parsedChannels;
+        }
+        
+        function displayChannels(channelsToDisplay) {
+            channelListDiv.innerHTML = ''; 
+            if (channelsToDisplay.length === 0) {
+                channelListDiv.innerHTML = `<p class="placeholder-text">لا توجد ${currentDisplayMode === 'vod' ? 'أفلام' : 'قنوات'} في هذه الفئة.</p>`;
+                return;
+            }
+            channelsToDisplay.forEach((channel, index) => {
+                const channelDiv = document.createElement('div');
+                channelDiv.className = 'list-item flex items-center space-x-1.5 rtl:space-x-reverse'; 
+                channelDiv.dataset.url = channel.url; 
+                channelDiv.dataset.streamId = channel.stream_id; 
+                channelDiv.dataset.type = channel.type; 
+                channelDiv.dataset.name = channel.name; 
+                channelDiv.dataset.epg = channel.type === 'xtream_vod' ? (channel.plot || 'فيلم') : channel.epg_title; 
+                if (channel.type === 'xtream_vod') {
+                    channelDiv.dataset.containerExtension = channel.container_extension;
+                    channelDiv.dataset.plot = channel.plot;
+                }
+
+
+                const logoImg = document.createElement('img');
+                logoImg.src = channel.logo; 
+                logoImg.alt = ""; 
+                logoImg.className = 'w-5 h-5 object-contain rounded-sm flex-shrink-0'; 
+                logoImg.onerror = function() { this.src = 'https://placehold.co/40x40/1F2937/9CA3AF?text=X'; }; 
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'flex-grow overflow-hidden'; 
+
+                const channelNameSpan = document.createElement('span');
+                channelNameSpan.textContent = `${index + 1}. ${channel.name}`; 
+                channelNameSpan.className = 'text-sm font-medium text-gray-100 block truncate'; 
+                
+                const epgSpan = document.createElement('span');
+                epgSpan.textContent = channel.type === 'xtream_vod' ? (channel.plot ? channel.plot.substring(0,70) + '...' : 'فيلم') : channel.epg_title;
+                epgSpan.className = 'channel-info-epg block text-gray-400'; 
+
+                infoDiv.appendChild(channelNameSpan);
+                infoDiv.appendChild(epgSpan);
+                channelDiv.appendChild(logoImg);
+                channelDiv.appendChild(infoDiv);
+
+                channelDiv.addEventListener('click', () => {
+                    currentSelectedChannel = channel; 
+                    playChannelWithVideoJs(channel); 
+                    
+                    if (videoJsPlayer && !videoJsPlayer.isDisposed()) videoJsPlayer.poster(channel.logo || 'https://placehold.co/1920x1080/0a0a0a/333333?text=Loading...');
+                    suggestChannelsButton.disabled = false; 
+                    document.querySelectorAll('#channelList .list-item').forEach(item => item.classList.remove('active')); 
+                    channelDiv.classList.add('active');
+                });
+                channelListDiv.appendChild(channelDiv);
+            });
+        }
+
+        function displayCategoriesList(categoriesToDisplay) { 
+            categoryListDiv.innerHTML = ''; 
+            if (!categoriesToDisplay || categoriesToDisplay.length === 0) {
+                categoryListDiv.innerHTML = `<p class="placeholder-text">لا توجد فئات لـ ${currentDisplayMode === 'vod' ? 'VOD' : 'البث المباشر'}.</p>`;
+                categoriesHeader.textContent = currentDisplayMode === 'vod' ? "فئات VOD" : "الفئات"; 
+                return;
+            }
+            
+            categoriesHeader.textContent = currentDisplayMode === 'vod' ? "فئات VOD" : "الفئات";
+            
+            const allItemsCatDiv = document.createElement('div');
+            allItemsCatDiv.className = 'list-item'; 
+            allItemsCatDiv.textContent = currentDisplayMode === 'vod' ? 'جميع الأفلام' : 'جميع القنوات';
+            allItemsCatDiv.dataset.categoryId = 'all'; 
+            allItemsCatDiv.addEventListener('click', () => {
+                filterChannelsByCategory('all'); 
+                document.querySelectorAll('#categoryList .list-item').forEach(item => item.classList.remove('active'));
+                allItemsCatDiv.classList.add('active');
+            });
+            categoryListDiv.appendChild(allItemsCatDiv);
+
+            categoriesToDisplay.sort((a,b) => a.category_name.localeCompare(b.category_name)).forEach(cat => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'list-item'; 
+                catDiv.textContent = cat.category_name;
+                catDiv.dataset.categoryId = cat.category_id;
+                catDiv.addEventListener('click', () => {
+                    filterChannelsByCategory(cat.category_id);
+                    document.querySelectorAll('#categoryList .list-item').forEach(item => item.classList.remove('active'));
+                    catDiv.classList.add('active');
+                });
+                categoryListDiv.appendChild(catDiv);
+            });
+            const firstDisplayedCategory = categoryListDiv.querySelector('.list-item[data-category-id="all"]');
+            if (firstDisplayedCategory) {
+                firstDisplayedCategory.classList.add('active');
+            }
+        }
+
+        function filterChannelsByCategory(categoryId) {
+            channelSearchInput.value = ''; 
+            let channelsToFilter = currentDisplayMode === 'vod' ? currentVodChannels : currentLiveChannels;
+            let categoryName = currentDisplayMode === 'vod' ? 'جميع الأفلام' : 'جميع القنوات';
+
+
+            if (categoryId === 'all') {
+                allChannels = [...channelsToFilter]; 
+            } else {
+                const selectedCategory = (currentDisplayMode === 'vod' ? currentVodCategories : currentLiveCategories).find(cat => cat.category_id.toString() === categoryId.toString());
+                if (selectedCategory) categoryName = selectedCategory.category_name;
+                allChannels = channelsToFilter.filter(ch => ch.category_id.toString() === categoryId.toString());
+            }
+            categoriesHeader.textContent = categoryName;
+            displayChannels(allChannels); 
+        }
+        
+        function highlightChannelByName(name) {
+             document.querySelectorAll('#channelList .list-item').forEach(item => { 
+                item.classList.remove('active');
+                if (item.dataset.name === name) {
+                    item.classList.add('active');
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                }
+            });
+        }
+
+        function playChannelWithVideoJs(channel) {
+            if (!videoJsPlayer || videoJsPlayer.isDisposed()) {
+                initializeVideoJsPlayer(); 
+                setTimeout(() => playChannelWithVideoJs(channel), 700); 
+                return;
+            }
+
+            let streamUrl = '';
+            let streamType = 'application/x-mpegURL'; 
+
+            if (channel.type === 'xtream_vod') {
+                streamUrl = `${currentXtreamConfig.server}/movie/${currentXtreamConfig.user}/${currentXtreamConfig.pass}/${channel.stream_id}.${channel.container_extension}`;
+                if (channel.container_extension && channel.container_extension.toLowerCase() === 'mp4') {
+                    streamType = 'video/mp4';
+                }
+                 nowPlayingEpg.textContent = channel.plot ? channel.plot.substring(0,70) + '...' : 'فيلم';
+            } else if (channel.type === 'xtream') { 
+                streamUrl = `${currentXtreamConfig.server}/live/${currentXtreamConfig.user}/${currentXtreamConfig.pass}/${channel.stream_id}.m3u8`;
+                nowPlayingEpg.textContent = channel.epg_title;
+            } else if (channel.type === 'm3u') { 
+                streamUrl = channel.url;
+                if (streamUrl.includes('.mpd')) streamType = 'application/dash+xml';
+                else if (streamUrl.includes('.mp4')) streamType = 'video/mp4';
+                nowPlayingEpg.textContent = channel.epg_title;
+            }
+            
+            if (!streamUrl) { showModal("خطأ في الرابط", "لم يتمكن من تحديد رابط البث."); return; }
+            
+            videoJsPlayer.poster(channel.logo || 'https://placehold.co/1920x1080/0a0a0a/333333?text=تحميل...');
+            videoJsPlayer.src({ src: streamUrl, type: streamType });
+            videoJsPlayer.load(); 
+            videoJsPlayer.play().catch(error => console.error("Video.js play error:", error));
+
+            nowPlayingChannelName.textContent = channel.name;
+            // EPG text is now set based on type within the if/else block above
+        }
+
+        async function processM3uDataAndPlay(data) { 
+            loaderM3uPopup.classList.remove('hidden');
+            m3uErrorPopup.classList.add('hidden');
+            try {
+                currentPlaylistType = 'm3u';
+                currentDisplayMode = 'live'; 
+                currentLiveChannels = parseM3U(data); 
+                
+                allChannels = [...currentLiveChannels];
+                allCategories = [...currentLiveCategories];
+
+                if (allChannels.length > 0) {
+                    displayCategoriesList(allCategories); 
+                    filterChannelsByCategory('all'); 
+                    showScreen(playerUiContainer); 
+                     if (!videoJsPlayer || videoJsPlayer.isDisposed()) { 
+                        initializeVideoJsPlayer();
+                    }
+                } else {
+                    m3uErrorPopup.textContent = 'لم يتم العثور على قنوات في الملف.';
+                    m3uErrorPopup.classList.remove('hidden');
+                }
+            } catch (error) {
+                 m3uErrorPopup.textContent = 'فشل تحليل ملف M3U.';
+                 m3uErrorPopup.classList.remove('hidden');
+                 console.error("Error processing M3U data:", error);
+            } finally {
+                loaderM3uPopup.classList.add('hidden');
+            }
+        }
+
+        loadM3uUrlButton.addEventListener('click', async () => {
+            const url = m3uUrlInput.value.trim();
+            if (!url) { m3uErrorPopup.textContent = 'الرجاء إدخال رابط.'; m3uErrorPopup.classList.remove('hidden'); return; }
+            m3uErrorPopup.classList.add('hidden'); loaderM3uPopup.classList.remove('hidden');
+            
+            try {
+                const response = await fetch(url); 
+                if (!response.ok) throw new Error(`HTTP_ERROR_${response.status}`);
+                const data = await response.text();
+                await processM3uDataAndPlay(data);
+            } catch (error) {
+                console.error('فشل تحميل M3U URL:', error.message);
+                let msg = 'فشل تحميل M3U من الرابط.';
+                if (error.message.startsWith("HTTP_ERROR_")) msg = `خطأ خادم (${error.message.split("_")[2]}).`;
+                else if (error.name === 'TypeError' && error.message.toLowerCase().includes('failed to fetch')) {
+                    msg = "فشل الاتصال بالخادم لتحميل M3U. تحقق من الرابط، الشبكة، أو إعدادات CORS على الخادم.";
+                }
+                m3uErrorPopup.textContent = msg;
+                m3uErrorPopup.classList.remove('hidden');
+            } finally {
+                loaderM3uPopup.classList.add('hidden');
+            }
+        });
+
+        m3uFileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            m3uErrorPopup.classList.add('hidden'); loaderM3uPopup.classList.remove('hidden');
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try { await processM3uDataAndPlay(e.target.result); } 
+                catch (error) { 
+                    m3uErrorPopup.textContent = 'فشل معالجة الملف.'; 
+                    m3uErrorPopup.classList.remove('hidden');
+                } 
+                finally { loaderM3uPopup.classList.add('hidden'); }
+            };
+            reader.onerror = () => { 
+                m3uErrorPopup.textContent = 'فشل قراءة الملف.'; 
+                m3uErrorPopup.classList.remove('hidden');
+                loaderM3uPopup.classList.add('hidden');
+            };
+            reader.readAsText(file);
+        });
+
+        async function loadXtreamPlaylist(serverUrlFromConfig, user, pass, type = 'live') { 
+            loaderXtreamPopup.classList.remove('hidden');
+            xtreamErrorPopup.classList.add('hidden');
+            // currentXtreamConfig is already set by loadXtreamButton which calls this function
+            currentPlaylistType = 'xtream';
+            console.log(`Attempting to load Xtream ${type} playlist from: ${serverUrlFromConfig}`);
+
+            try {
+                if (type === 'live') {
+                    currentDisplayMode = 'live';
+                    const catApiUrl = `${serverUrlFromConfig}/player_api.php?username=${user}&password=${pass}&action=get_live_categories`;
+                    console.log("Fetching live categories from:", catApiUrl);
+                    const catResponse = await fetch(catApiUrl);
+                    if (!catResponse.ok) throw new Error(`XTREAM_HTTP_ERROR_CATEGORIES_${catResponse.status}`);
+                    currentLiveCategories = (await catResponse.json()) || [];
+                    if (!Array.isArray(currentLiveCategories)) currentLiveCategories = [];
+                    console.log("Live categories fetched:", currentLiveCategories);
+
+
+                    const streamsApiUrl = `${serverUrlFromConfig}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`;
+                    console.log("Fetching live streams from:", streamsApiUrl);
+                    const streamsResponse = await fetch(streamsApiUrl);
+                    if (!streamsResponse.ok) throw new Error(`XTREAM_HTTP_ERROR_STREAMS_${streamsResponse.status}`);
+                    const streamsData = (await streamsResponse.json()) || [];
+                    console.log("Live streams data fetched:", streamsData);
+                    
+                    if (Array.isArray(streamsData) && streamsData.length > 0) {
+                        currentLiveChannels = streamsData.map(ch => ({
+                            name: ch.name,
+                            logo: ch.stream_icon || 'https://placehold.co/40x40/1F2937/9CA3AF?text=L', 
+                            stream_id: ch.stream_id.toString(), 
+                            category_id: ch.category_id.toString(), 
+                            epg_title: ch.epg_channel_id || "EPG غير متوفر", 
+                            type: 'xtream' 
+                        }));
+                        allChannels = [...currentLiveChannels];
+                        allCategories = [...currentLiveCategories];
+                        displayCategoriesList(allCategories); 
+                        filterChannelsByCategory('all'); 
+                        showScreen(playerUiContainer); 
+                         if (!videoJsPlayer || videoJsPlayer.isDisposed()) {
+                            initializeVideoJsPlayer();
+                        }
+                    } else if (streamsData.user_info && streamsData.user_info.auth === 0) {
+                         throw new Error("XTREAM_AUTH_FAILED"); 
+                    } else {
+                        currentLiveChannels = []; 
+                        currentLiveCategories = []; 
+                        throw new Error("NO_LIVE_STREAMS");
+                    }
+                }
+            } catch (error) {
+                console.error(`فشل تحميل قائمة ${type === 'live' ? 'البث المباشر' : 'VOD'} من Xtream:`, error);
+                console.error("Full fetch error object:", error); 
+                let msg = `فشل تحميل قائمة ${type === 'live' ? 'البث المباشر' : 'VOD'} من Xtream.`;
+                
+                if (error.message.includes("XTREAM_AUTH_FAILED")) {
+                     msg = "فشل المصادقة. تحقق من بيانات الاعتماد.";
+                } else if (error.message.includes("XTREAM_HTTP_ERROR_CATEGORIES_") || error.message.includes("XTREAM_HTTP_ERROR_STREAMS_")) {
+                    const statusCode = error.message.split("_").pop();
+                    msg = `خطأ من الخادم (كود: ${statusCode}). تأكد من صحة الرابط وبيانات الاعتماد.`;
+                } else if (error.message.includes("NO_LIVE_STREAMS")) {
+                    msg = "لم يتم العثور على قنوات بث مباشر.";
+                } else if (error.name === 'TypeError' && error.message.toLowerCase().includes('failed to fetch')) { 
+                    msg = "فشل الاتصال بالخادم. الأسباب المحتملة: 1. مشكلة في الشبكة. 2. رابط الخادم أو بيانات الاعتماد غير صحيحة. 3. مشكلة CORS: إذا كنت تشغل هذا الملف محليًا، قد يمنع المتصفح الاتصال بالخادم بسبب سياسات الأمان. تأكد أن الخادم يسمح بالاتصالات من هذا المصدر.";
+                } else if (error instanceof SyntaxError) { 
+                    msg = "استجابة غير صالحة من الخادم (ليست JSON). قد يكون الرابط أو بيانات الاعتماد خاطئة، أو أن الخادم لا يعمل بشكل صحيح.";
+                }
+                xtreamErrorPopup.textContent = msg;
+                xtreamErrorPopup.classList.remove('hidden');
+                showScreen(xtreamInputScreen); 
+            } finally {
+                loaderXtreamPopup.classList.add('hidden');
+            }
+        }
+        
+        loadXtreamButton.addEventListener('click', async () => {
+            let serverFieldValue = xtreamServerInput.value.trim();
+            const portFieldValue = xtreamPortInput.value.trim();
+            const user = xtreamUserInput.value.trim();
+            const pass = xtreamPassInput.value.trim();
+
+            if (!serverFieldValue || !user || !pass) { 
+                xtreamErrorPopup.textContent = 'الرجاء ملء حقول الخادم، اسم المستخدم، وكلمة المرور.'; 
+                xtreamErrorPopup.classList.remove('hidden'); 
+                return; 
+            }
+            xtreamErrorPopup.classList.add('hidden'); 
+
+            let scheme = '';
+            if (serverFieldValue.startsWith('http://')) {
+                scheme = 'http://';
+                serverFieldValue = serverFieldValue.substring(7);
+            } else if (serverFieldValue.startsWith('https://')) {
+                scheme = 'https://';
+                serverFieldValue = serverFieldValue.substring(8);
+            } else {
+                scheme = 'http://'; 
+            }
+
+            if (serverFieldValue.endsWith('/')) {
+                serverFieldValue = serverFieldValue.slice(0, -1);
+            }
+
+            let host = serverFieldValue;
+            let portToUse = portFieldValue; 
+
+            const colonIndex = serverFieldValue.lastIndexOf(':');
+            const slashAfterColon = colonIndex !== -1 ? serverFieldValue.indexOf('/', colonIndex) : -1;
+
+            if (colonIndex !== -1 && (slashAfterColon === -1 || slashAfterColon > colonIndex) ) {
+                const potentialPortInServerField = serverFieldValue.substring(colonIndex + 1);
+                if (!isNaN(parseInt(potentialPortInServerField))) {
+                    host = serverFieldValue.substring(0, colonIndex);
+                    portToUse = potentialPortInServerField; 
+                    if (portFieldValue && portFieldValue !== potentialPortInServerField) {
+                        console.warn("المنفذ محدد في حقل الخادم وفي حقل المنفذ المنفصل. سيتم استخدام المنفذ من حقل الخادم:", potentialPortInServerField);
+                        xtreamErrorPopup.textContent = `تنبيه: تم استخدام المنفذ (${potentialPortInServerField}) من عنوان الخادم.`;
+                        xtreamErrorPopup.classList.remove('hidden');
+                    } else if (portFieldValue && portFieldValue === potentialPortInServerField) {
+                        xtreamErrorPopup.classList.add('hidden');
+                    }
+                }
+            }
+            
+            let finalServerUrl = scheme + host;
+            if (portToUse) { 
+                finalServerUrl += `:${portToUse}`;
+            }
+            
+            currentXtreamConfig = { server: finalServerUrl, user, pass }; 
+            await loadXtreamPlaylist(finalServerUrl, user, pass, 'live'); 
+        });
+
+        async function fetchAndDisplayXtreamVod() {
+            if (!currentXtreamConfig.server) {
+                showModal("خطأ", "بيانات اعتماد Xtream غير محملة. يرجى تسجيل الدخول إلى Xtream أولاً.");
+                return;
+            }
+            showModal("جاري تحميل VOD...", "<div class='loader mx-auto my-2'></div>", false);
+            messageConfirmButton.style.display = 'none';
+
+            try {
+                const { server, user, pass } = currentXtreamConfig; 
+                const vodCatApiUrl = `${server}/player_api.php?username=${user}&password=${pass}&action=get_vod_categories`;
+                console.log("Fetching VOD categories from:", vodCatApiUrl);
+                const vodCatResponse = await fetch(vodCatApiUrl);
+                if (!vodCatResponse.ok) throw new Error(`XTREAM_VOD_CAT_ERROR_${vodCatResponse.status}`);
+                currentVodCategories = (await vodCatResponse.json()) || [];
+                 if (!Array.isArray(currentVodCategories)) currentVodCategories = [];
+                console.log("VOD categories fetched:", currentVodCategories);
+
+
+                const vodStreamsApiUrl = `${server}/player_api.php?username=${user}&password=${pass}&action=get_vod_streams`;
+                console.log("Fetching VOD streams from:", vodStreamsApiUrl);
+                const vodStreamsResponse = await fetch(vodStreamsApiUrl);
+                if (!vodStreamsResponse.ok) throw new Error(`XTREAM_VOD_STREAMS_ERROR_${vodStreamsResponse.status}`);
+                const vodStreamsData = (await vodStreamsResponse.json()) || [];
+                console.log("VOD streams data fetched:", vodStreamsData);
+
+                if (Array.isArray(vodStreamsData) && vodStreamsData.length > 0) {
+                    currentVodChannels = vodStreamsData.map(ch => ({
+                        name: ch.name,
+                        logo: ch.stream_icon || ch.movie_image || 'https://placehold.co/40x60/1F2937/9CA3AF?text=VOD', 
+                        stream_id: ch.stream_id.toString(), 
+                        category_id: ch.category_id.toString(), 
+                        epg_title: ch.name, // For VOD, EPG is the movie title itself
+                        type: 'xtream_vod',
+                        container_extension: ch.container_extension || 'mp4', 
+                        plot: ch.plot || '',
+                        rating: ch.rating || 'N/A',
+                        releasedate: ch.releasedate || ''
+                    }));
+                    allChannels = [...currentVodChannels]; // Set current display to VOD
+                    allCategories = [...currentVodCategories]; // Set current display to VOD categories
+                    
+                    messageBox.classList.add('hidden'); 
+                    displayCategoriesList(allCategories); 
+                    filterChannelsByCategory(allCategories.length > 0 ? allCategories[0].category_id : 'all'); 
+                    showScreen(playerUiContainer);
+                    if (!videoJsPlayer || videoJsPlayer.isDisposed()) {
+                        initializeVideoJsPlayer();
+                    }
+                } else {
+                     currentVodChannels = []; 
+                     currentVodCategories = []; 
+                     throw new Error("NO_VOD_STREAMS");
+                }
+            } catch (error) {
+                console.error("فشل تحميل Xtream VOD:", error);
+                console.error("Full VOD fetch error object:", error); 
+                messageBox.classList.add('hidden'); 
+                let errorMsg = "فشل تحميل قائمة VOD.";
+                if (error.message.includes("NO_VOD_STREAMS")) errorMsg = "لم يتم العثور على أفلام (VOD).";
+                else if (error.message.includes("XTREAM_VOD_CAT_ERROR_") || error.message.includes("XTREAM_VOD_STREAMS_ERROR_")) {
+                     const statusCode = error.message.split("_").pop();
+                     errorMsg = `خطأ من خادم VOD (كود: ${statusCode}).`;
+                } else if (error.name === 'TypeError' && error.message.toLowerCase().includes('failed to fetch')) { 
+                    errorMsg = "فشل الاتصال بخادم VOD. الأسباب المحتملة: 1. مشكلة في الشبكة. 2. رابط الخادم أو بيانات الاعتماد غير صحيحة. 3. مشكلة CORS: إذا كنت تشغل هذا الملف محليًا، قد يمنع المتصفح الاتصال بالخادم بسبب سياسات الأمان. تأكد أن الخادم يسمح بالاتصالات من هذا المصدر.";
+                } else if (error instanceof SyntaxError) { 
+                    errorMsg = "استجابة غير صالحة من خادم VOD (ليست JSON).";
+                }
+                showModal("خطأ VOD", errorMsg);
+            }
+        }
+        
+        channelSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            let sourceChannels = currentDisplayMode === 'vod' ? currentVodChannels : currentLiveChannels;
+            
+            const activeCategoryItem = document.querySelector('#categoryList .list-item.active'); 
+            const activeCategoryId = activeCategoryItem ? activeCategoryItem.dataset.categoryId : 'all';
+            
+            let channelsToFilterFrom = sourceChannels;
+            if(activeCategoryId !== 'all') {
+                channelsToFilterFrom = sourceChannels.filter(ch => ch.category_id.toString() === activeCategoryId.toString());
+            }
+            const filteredChannels = channelsToFilterFrom.filter(channel =>
+                channel.name.toLowerCase().includes(searchTerm)
+            );
+            allChannels = filteredChannels; 
+            displayChannels(allChannels); 
+        });
+
+        suggestChannelsButton.addEventListener('click', async () => {
+            if (!currentSelectedChannel) { showModal("تنبيه", "الرجاء تحديد قناة أولاً."); return; }
+            
+            let poolForSuggestions = currentDisplayMode === 'vod' ? currentVodChannels : currentLiveChannels;
+            if (poolForSuggestions.length < 2) { showModal("تنبيه", "لا توجد عناصر كافية للاقتراحات."); return; }
+
+
+            showModal("✨ البحث عن اقتراحات...", "", false); 
+            messageText.innerHTML = ''; geminiLoader.classList.remove('hidden'); 
+            messageConfirmButton.style.display = 'none'; 
+
+            const currentItemName = currentSelectedChannel.name;
+            const activeCategoryItem = document.querySelector('#categoryList .list-item.active'); 
+            const activeCategoryId = activeCategoryItem ? activeCategoryItem.dataset.categoryId : 'all';
+            
+            let pool = poolForSuggestions;
+            if(activeCategoryId !== 'all') {
+                 pool = poolForSuggestions.filter(ch => ch.category_id.toString() === activeCategoryId.toString());
+            }
+            const availableNames = pool.map(ch => ch.name).filter(name => name !== currentItemName); 
+            
+            if (availableNames.length === 0) {
+                geminiLoader.classList.add('hidden');
+                showModal("✨ اقتراحات", `<p>لا توجد ${currentDisplayMode === 'vod' ? 'أفلام' : 'قنوات'} أخرى في هذه الفئة للاقتراح.</p>`);
+                messageConfirmButton.style.display = 'block'; return;
+            }
+
+            const itemTypeForPrompt = currentDisplayMode === 'vod' ? "فيلم" : "قناة";
+            const prompt = `أنا أشاهد ${itemTypeForPrompt} اسمه "${currentItemName}". من فضلك اقترح لي 3 إلى 5 ${itemTypeForPrompt === 'فيلم' ? 'أفلام' : 'قنوات تلفزيونية'} أخرى مشابهة له من القائمة التالية فقط: ${availableNames.join(', ')}. يجب أن تكون إجابتك بتنسيق JSON فقط، مثل هذا المثال: {"suggested_channels": ["اسم العنصر الأول المقترح", "اسم العنصر الثاني المقترح"]}. إذا لم تجد أي اقتراحات مناسبة من القائمة المعطاة، فرد بـ {"suggested_channels": []}.`;
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: { 
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: { "suggested_channels": { "type": "ARRAY", "items": { "type": "STRING" } } },
+                        required: ["suggested_channels"]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`Gemini API failed: ${response.status} ${await response.text()}`);
+                const result = await response.json();
+                geminiLoader.classList.add('hidden');
+
+                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                    const suggestionsObj = JSON.parse(result.candidates[0].content.parts[0].text);
+                    const suggestedNames = suggestionsObj.suggested_channels;
+                    if (suggestedNames && suggestedNames.length > 0) {
+                        let html = `<p class="mb-1 text-sm">${itemTypeForPrompt === 'فيلم' ? 'أفلام' : 'قنوات'} مشابهة مقترحة:</p><ul class="space-y-0.5">`; 
+                        suggestedNames.forEach(name => {
+                            const ch = poolForSuggestions.find(c => c.name === name); 
+                            if (ch) html += `<li class="suggestion-item text-sky-400 hover:text-sky-300 text-sm cursor-pointer" data-channel-name="${ch.name}">${ch.name}</li>`; 
+                        });
+                        html += '</ul>';
+                        showModal(`✨ اقتراحات الـ${itemTypeForPrompt === 'فيلم' ? 'أفلام' : 'قنوات'}`, html, true); 
+
+                        messageText.querySelectorAll('.suggestion-item').forEach(item => {
+                            item.addEventListener('click', () => {
+                                const name = item.dataset.channelName;
+                                const chan = poolForSuggestions.find(c => c.name === name);
+                                if (chan) { currentSelectedChannel = chan; playChannelWithVideoJs(chan); highlightChannelByName(name); }
+                                messageBox.classList.add('hidden'); 
+                            });
+                        });
+                    } else { showModal("✨ اقتراحات", `<p>لم يتم العثور على ${itemTypeForPrompt === 'فيلم' ? 'أفلام' : 'قنوات'} مشابهة من القائمة المتاحة.</p>`); }
+                } else { showModal("خطأ اقتراحات", "لم يتم استلام اقتراحات صالحة من الخدمة."); }
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                geminiLoader.classList.add('hidden');
+                showModal("خطأ اتصال Gemini", "فشل الاتصال بخدمة الاقتراحات. تأكد من صحة مفتاح API أو أن الخدمة متاحة.");
+            } finally { messageConfirmButton.style.display = 'block'; } 
+        });
+        
+        showScreen(loginScreen); 
+    </script>
+</body>
+</html>
